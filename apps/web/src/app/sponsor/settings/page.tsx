@@ -27,7 +27,7 @@ export default function SponsorSettingsPage() {
 	const currentUser = users.find((u: any) => u.id === session?.user?.id);
 
 	const [status, setStatus] = useState<"active" | "inactive" | "hidden">(
-		currentUser?.sponsorStatus || "active"
+		(currentUser?.sponsorStatus as "active" | "inactive" | "hidden") || "active"
 	);
 	const [companyName, setCompanyName] = useState(currentUser?.sponsorCompanyName || "");
 	const [companyWebsite, setCompanyWebsite] = useState(currentUser?.sponsorCompanyWebsite || "");

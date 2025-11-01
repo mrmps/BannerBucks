@@ -158,7 +158,7 @@ export const appRouter = {
 				.from(schema.account)
 				.where(eq(schema.account.userId, userId));
 
-			const twitterAccount = accounts.find((acc) => acc.providerId === "twitter");
+			const twitterAccount = accounts.find((acc: typeof accounts[0]) => acc.providerId === "twitter");
 
 			if (!twitterAccount?.accessToken) {
 				throw new Error("Twitter account not connected");

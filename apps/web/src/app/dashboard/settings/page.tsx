@@ -27,13 +27,13 @@ export default function CreatorSettingsPage() {
 	const currentUser = users.find((u: any) => u.id === session?.user?.id);
 
 	const [status, setStatus] = useState<"available" | "unavailable" | "hidden">(
-		currentUser?.creatorStatus || "available"
+		(currentUser?.creatorStatus as "available" | "unavailable" | "hidden") || "available"
 	);
 	const [priceMin, setPriceMin] = useState(currentUser?.creatorPriceMin || "");
 	const [priceMax, setPriceMax] = useState(currentUser?.creatorPriceMax || "");
 	const [lookingFor, setLookingFor] = useState(currentUser?.creatorLookingFor || "");
 	const [contactMethod, setContactMethod] = useState<"twitter" | "email" | "other">(
-		currentUser?.creatorContactMethod || "twitter"
+		(currentUser?.creatorContactMethod as "twitter" | "email" | "other") || "twitter"
 	);
 	const [contactValue, setContactValue] = useState(
 		currentUser?.creatorContactValue || currentUser?.twitterUsername || ""

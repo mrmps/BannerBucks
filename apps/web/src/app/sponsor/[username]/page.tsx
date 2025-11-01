@@ -146,7 +146,7 @@ export default function SponsorProfilePage() {
 										variant="outline"
 										className="w-full"
 										onClick={() =>
-											window.open(sponsor.sponsorCompanyWebsite, "_blank")
+											sponsor.sponsorCompanyWebsite && window.open(sponsor.sponsorCompanyWebsite, "_blank")
 										}
 									>
 										Visit Website

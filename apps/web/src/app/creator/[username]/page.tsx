@@ -202,30 +202,30 @@ export default function CreatorProfilePage() {
 
 						{/* Sidebar */}
 						<div className="space-y-6">
-							{/* Pricing */}
-							{creator.creatorPriceMin && (
-								<Card className="p-6">
-									<h3 className="font-semibold mb-3">💰 Pricing</h3>
-									<p className="text-2xl font-bold mb-1">
-										${creator.creatorPriceMin}-${creator.creatorPriceMax}
+						{/* Pricing */}
+						{creator.creatorPriceMin && creator.creatorPriceMax && (
+							<Card className="p-6">
+								<h3 className="font-semibold mb-3">💰 Pricing</h3>
+								<p className="text-2xl font-bold mb-1">
+									${creator.creatorPriceMin}-${creator.creatorPriceMax}
+								</p>
+								<p className="text-sm text-muted-foreground">per week</p>
+								<div className="mt-4 pt-4 border-t">
+									<p className="text-sm text-muted-foreground mb-1">Est. CPM</p>
+									<p className="font-semibold">
+										$
+										{Math.round(
+											((creator.creatorPriceMin + creator.creatorPriceMax) / 2 / monthlyVisits) *
+												1000
+										)}-$
+										{Math.round(
+											((creator.creatorPriceMin + creator.creatorPriceMax) / 2 / monthlyVisits) *
+												1000 * 1.5
+										)}
 									</p>
-									<p className="text-sm text-muted-foreground">per week</p>
-									<div className="mt-4 pt-4 border-t">
-										<p className="text-sm text-muted-foreground mb-1">Est. CPM</p>
-										<p className="font-semibold">
-											$
-											{Math.round(
-												((creator.creatorPriceMin + creator.creatorPriceMax) / 2 / monthlyVisits) *
-													1000
-											)}-$
-											{Math.round(
-												((creator.creatorPriceMin + creator.creatorPriceMax) / 2 / monthlyVisits) *
-													1000 * 1.5
-											)}
-										</p>
-									</div>
-								</Card>
-							)}
+								</div>
+							</Card>
+						)}
 
 							{/* Contact */}
 							{creator.creatorContactMethod && (
