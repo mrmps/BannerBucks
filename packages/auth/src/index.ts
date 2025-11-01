@@ -10,9 +10,14 @@ export const auth = betterAuth<BetterAuthOptions>({
 
 		schema: schema,
 	}),
-	trustedOrigins: [process.env.CORS_ORIGIN || ""],
-	emailAndPassword: {
-		enabled: true,
+	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
+	trustedOrigins: [process.env.CORS_ORIGIN || "http://localhost:3001"],
+	socialProviders: {
+		twitter: {
+			clientId: process.env.X_CLIENT_ID as string,
+			clientSecret: process.env.X_CLIENT_SECRET as string,
+			redirectURI: process.env.X_REDIRECT_URI || "http://localhost:3001/api/auth/callback/twitter",
+		},
 	},
-  plugins: [nextCookies()]
+	plugins: [nextCookies()]
 });

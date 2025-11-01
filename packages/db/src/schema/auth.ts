@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, serial, integer } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -8,6 +8,24 @@ export const user = pgTable("user", {
 	image: text("image"),
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at").notNull(),
+	
+	// Twitter data
+	twitterId: text("twitter_id").unique(),
+	twitterUsername: text("twitter_username"),
+	twitterBio: text("twitter_bio"),
+	twitterLocation: text("twitter_location"),
+	twitterBannerUrl: text("twitter_banner_url"),
+	twitterUrl: text("twitter_url"),
+	twitterVerified: boolean("twitter_verified").default(false),
+	twitterVerifiedType: text("twitter_verified_type"),
+	twitterCreatedAt: timestamp("twitter_created_at"),
+	
+	// Public metrics
+	twitterFollowers: integer("twitter_followers").default(0),
+	twitterFollowing: integer("twitter_following").default(0),
+	twitterTweetCount: integer("twitter_tweet_count").default(0),
+	twitterListedCount: integer("twitter_listed_count").default(0),
+	twitterVerifiedFollowers: integer("twitter_verified_followers").default(0),
 });
 
 export const session = pgTable("session", {

@@ -1,0 +1,5 @@
+use Orpc and useQuery. they are there for a reason! Never use useffect.
+
+Always be super typesefe. Never let any lint errors be.
+
+Never use 'any'. Always check for linter errors before completing a task and fix them all.
