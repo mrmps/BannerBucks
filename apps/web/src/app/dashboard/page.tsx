@@ -9,7 +9,6 @@ import Loader from "@/components/loader";
 import { client } from "@/utils/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { SyncTwitterButton } from "@/components/sync-twitter-button";
-import { redirect } from "next/navigation";
 
 export default function DashboardPage() {
 	const { data: session, isPending } = authClient.useSession();
