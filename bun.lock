@@ -65,14 +65,13 @@
         "@orpc/server": "catalog:",
         "@orpc/zod": "catalog:",
         "dotenv": "catalog:",
-        "drizzle-orm": "^0.44.7",
+        "next": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
         "tsdown": "catalog:",
       },
       "peerDependencies": {
-        "next": "^16.0.0",
         "typescript": "^5",
       },
     },
