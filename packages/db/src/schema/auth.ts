@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -26,6 +26,29 @@ export const user = pgTable("user", {
 	twitterTweetCount: integer("twitter_tweet_count").default(0),
 	twitterListedCount: integer("twitter_listed_count").default(0),
 	twitterVerifiedFollowers: integer("twitter_verified_followers").default(0),
+	
+	// Platform role
+	role: text("role"), // "creator" | "sponsor" | "both"
+	onboardingCompleted: boolean("onboarding_completed").default(false),
+	
+	// Creator settings
+	creatorStatus: text("creator_status"), // "available" | "unavailable" | "hidden"
+	creatorPriceMin: integer("creator_price_min"),
+	creatorPriceMax: integer("creator_price_max"),
+	creatorCategories: text("creator_categories"), // JSON: ["tech", "saas"]
+	creatorLookingFor: text("creator_looking_for"),
+	creatorContactMethod: text("creator_contact_method"), // "twitter" | "email" | "other"
+	creatorContactValue: text("creator_contact_value"),
+	
+	// Sponsor settings
+	sponsorStatus: text("sponsor_status"), // "active" | "inactive" | "hidden"
+	sponsorCompanyName: text("sponsor_company_name"),
+	sponsorCompanyWebsite: text("sponsor_company_website"),
+	sponsorIndustry: text("sponsor_industry"),
+	sponsorCategories: text("sponsor_categories"), // JSON: ["tech", "saas"]
+	sponsorBudgetMin: integer("sponsor_budget_min"),
+	sponsorBudgetMax: integer("sponsor_budget_max"),
+	sponsorLookingFor: text("sponsor_looking_for"),
 });
 
 export const session = pgTable("session", {

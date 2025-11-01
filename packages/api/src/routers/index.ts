@@ -3,6 +3,7 @@ import type { RouterClient } from "@orpc/server";
 import { db } from "@banner-money/db";
 import * as schema from "@banner-money/db/schema/auth";
 import { isNotNull, eq } from "drizzle-orm";
+import { z } from "zod";
 
 export const appRouter = {
 	healthCheck: publicProcedure.handler(() => {
@@ -21,6 +22,7 @@ export const appRouter = {
 					id: schema.user.id,
 					name: schema.user.name,
 					image: schema.user.image,
+					role: schema.user.role,
 					twitterId: schema.user.twitterId,
 					twitterUsername: schema.user.twitterUsername,
 					twitterBio: schema.user.twitterBio,
@@ -35,6 +37,21 @@ export const appRouter = {
 					twitterTweetCount: schema.user.twitterTweetCount,
 					twitterListedCount: schema.user.twitterListedCount,
 					twitterVerifiedFollowers: schema.user.twitterVerifiedFollowers,
+					creatorStatus: schema.user.creatorStatus,
+					creatorPriceMin: schema.user.creatorPriceMin,
+					creatorPriceMax: schema.user.creatorPriceMax,
+					creatorCategories: schema.user.creatorCategories,
+					creatorLookingFor: schema.user.creatorLookingFor,
+					creatorContactMethod: schema.user.creatorContactMethod,
+					creatorContactValue: schema.user.creatorContactValue,
+					sponsorStatus: schema.user.sponsorStatus,
+					sponsorCompanyName: schema.user.sponsorCompanyName,
+					sponsorCompanyWebsite: schema.user.sponsorCompanyWebsite,
+					sponsorIndustry: schema.user.sponsorIndustry,
+					sponsorCategories: schema.user.sponsorCategories,
+					sponsorBudgetMin: schema.user.sponsorBudgetMin,
+					sponsorBudgetMax: schema.user.sponsorBudgetMax,
+					sponsorLookingFor: schema.user.sponsorLookingFor,
 					createdAt: schema.user.createdAt,
 				})
 				.from(schema.user)
@@ -43,6 +60,93 @@ export const appRouter = {
 
 			return users;
 		}),
+		setRole: protectedProcedure
+			.input(
+				z.object({
+					role: z.enum(["creator", "sponsor", "both"]),
+				}),
+			)
+			.handler(async ({ context, input }) => {
+				const userId = context.session.user.id;
+
+				await db
+					.update(schema.user)
+					.set({
+						role: input.role,
+						onboardingCompleted: true,
+					})
+					.where(eq(schema.user.id, userId));
+
+				return { success: true, role: input.role };
+			}),
+		updateCreatorSettings: protectedProcedure
+			.input(
+				z.object({
+					status: z.enum(["available", "unavailable", "hidden"]).optional(),
+					priceMin: z.number().optional(),
+					priceMax: z.number().optional(),
+					categories: z.array(z.string()).optional(),
+					lookingFor: z.string().optional(),
+					contactMethod: z.enum(["twitter", "email", "other"]).optional(),
+					contactValue: z.string().optional(),
+				}),
+			)
+			.handler(async ({ context, input }) => {
+				const userId = context.session.user.id;
+
+				await db
+					.update(schema.user)
+					.set({
+						creatorStatus: input.status,
+						creatorPriceMin: input.priceMin,
+						creatorPriceMax: input.priceMax,
+						creatorCategories: input.categories
+							? JSON.stringify(input.categories)
+							: undefined,
+						creatorLookingFor: input.lookingFor,
+						creatorContactMethod: input.contactMethod,
+						creatorContactValue: input.contactValue,
+						updatedAt: new Date(),
+					})
+					.where(eq(schema.user.id, userId));
+
+				return { success: true };
+			}),
+		updateSponsorSettings: protectedProcedure
+			.input(
+				z.object({
+					status: z.enum(["active", "inactive", "hidden"]).optional(),
+					companyName: z.string().optional(),
+					companyWebsite: z.string().optional(),
+					industry: z.string().optional(),
+					categories: z.array(z.string()).optional(),
+					budgetMin: z.number().optional(),
+					budgetMax: z.number().optional(),
+					lookingFor: z.string().optional(),
+				}),
+			)
+			.handler(async ({ context, input }) => {
+				const userId = context.session.user.id;
+
+				await db
+					.update(schema.user)
+					.set({
+						sponsorStatus: input.status,
+						sponsorCompanyName: input.companyName,
+						sponsorCompanyWebsite: input.companyWebsite,
+						sponsorIndustry: input.industry,
+						sponsorCategories: input.categories
+							? JSON.stringify(input.categories)
+							: undefined,
+						sponsorBudgetMin: input.budgetMin,
+						sponsorBudgetMax: input.budgetMax,
+						sponsorLookingFor: input.lookingFor,
+						updatedAt: new Date(),
+					})
+					.where(eq(schema.user.id, userId));
+
+				return { success: true };
+			}),
 	},
 	twitter: {
 		sync: protectedProcedure.handler(async ({ context }) => {
