@@ -3,14 +3,26 @@
 import { UserCard } from "@/components/user-card";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/loader";
 import { client, queryClient } from "@/utils/orpc";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQueryState, parseAsString, parseAsStringEnum } from "nuqs";
 
 export default function HomePage() {
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
+
+	// URL-based state management with nuqs
+	const [searchQuery, setSearchQuery] = useQueryState(
+		"search",
+		parseAsString.withDefault("")
+	);
+	const [sortBy, setSortBy] = useQueryState(
+		"sort",
+		parseAsStringEnum(["followers", "tweets", "verified"]).withDefault("followers")
+	);
 
 	// Fetch all users using ORPC
 	const { data: users = [], isLoading } = useQuery({
@@ -34,6 +46,30 @@ export default function HomePage() {
 	if (needsSync && !syncMutation.isPending) {
 		syncMutation.mutate();
 	}
+
+	// Filter and sort users based on URL state
+	const filteredAndSortedUsers = users
+		.filter((user: any) => {
+			if (!searchQuery) return true;
+			const query = searchQuery.toLowerCase();
+			return (
+				user.name?.toLowerCase().includes(query) ||
+				user.twitterUsername?.toLowerCase().includes(query) ||
+				user.twitterBio?.toLowerCase().includes(query)
+			);
+		})
+		.sort((a: any, b: any) => {
+			if (sortBy === "followers") {
+				return (b.twitterFollowers || 0) - (a.twitterFollowers || 0);
+			}
+			if (sortBy === "tweets") {
+				return (b.twitterTweetCount || 0) - (a.twitterTweetCount || 0);
+			}
+			if (sortBy === "verified") {
+				return (b.twitterVerified ? 1 : 0) - (a.twitterVerified ? 1 : 0);
+			}
+			return 0;
+		});
 
 	if (isLoading) {
 		return (
@@ -91,14 +127,67 @@ export default function HomePage() {
 					</div>
 				) : (
 					<div>
-						<h2 className="text-2xl font-bold mb-8">
-							Connected Creators ({users.length})
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-							{users.map((user: any) => (
-								<UserCard key={user.id} user={user} />
-							))}
+						<div className="flex flex-col gap-6 mb-8">
+							<div className="flex items-center justify-between">
+								<h2 className="text-2xl font-bold">
+									Connected Creators ({filteredAndSortedUsers.length}
+									{searchQuery && ` of ${users.length}`})
+								</h2>
+							</div>
+							
+							{/* Search and Filter Controls */}
+							<div className="flex flex-col sm:flex-row gap-4">
+								<div className="flex-1">
+									<Input
+										placeholder="Search creators..."
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
+										className="max-w-md"
+									/>
+								</div>
+								<div className="flex gap-2">
+									<Button
+										variant={sortBy === "followers" ? "default" : "outline"}
+										onClick={() => setSortBy("followers")}
+									>
+										By Followers
+									</Button>
+									<Button
+										variant={sortBy === "tweets" ? "default" : "outline"}
+										onClick={() => setSortBy("tweets")}
+									>
+										By Tweets
+									</Button>
+									<Button
+										variant={sortBy === "verified" ? "default" : "outline"}
+										onClick={() => setSortBy("verified")}
+									>
+										Verified
+									</Button>
+								</div>
+							</div>
 						</div>
+
+						{filteredAndSortedUsers.length === 0 ? (
+							<div className="text-center py-12">
+								<p className="text-muted-foreground">
+									No creators found matching "{searchQuery}"
+								</p>
+								<Button
+									variant="outline"
+									onClick={() => setSearchQuery("")}
+									className="mt-4"
+								>
+									Clear search
+								</Button>
+							</div>
+						) : (
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+								{filteredAndSortedUsers.map((user: any) => (
+									<UserCard key={user.id} user={user} />
+								))}
+							</div>
+						)}
 					</div>
 				)}
 			</main>

@@ -31,28 +31,29 @@ export function UserCard({ user }: UserCardProps) {
 	};
 
 	// Calculate estimated MONTHLY profile visits (banner views)
-	// Based on real X analytics: ~1.7x follower count per month
+	// Formula validated with real X analytics: 6.5K visits from 3.9K followers = 1.67x
 	const estimateMonthlyProfileVisits = () => {
 		const followers = user.twitterFollowers || 0;
-		const verifiedFollowers = user.twitterVerifiedFollowers || 0;
-		const tweets = user.twitterTweetCount || 0;
 		const listed = user.twitterListedCount || 0;
+		const tweets = user.twitterTweetCount || 0;
 
-		// Base: 170% of followers visit profile per month (validated from real data)
-		let monthlyVisits = followers * 1.7;
+		// Base formula: 1.67x followers per month (from real data validation)
+		let monthlyVisits = followers * 1.67;
 
-		// Boost for verified accounts (they get more profile clicks)
-		if (user.twitterVerified || user.twitterVerifiedType) {
-			monthlyVisits *= 1.3;
-		}
-
-		// Boost for high engagement (listed on many lists = people check profile)
+		// Adjustments based on account quality
+		
+		// High engagement accounts (many lists) get +20%
 		if (listed > 100) {
 			monthlyVisits *= 1.2;
 		}
-
-		// Active accounts (lots of tweets) get more profile visits
+		
+		// Very active accounts (high tweet volume) get +10%
 		if (tweets > 10000) {
+			monthlyVisits *= 1.1;
+		}
+		
+		// Verified accounts get +15% (blue checkmark attracts more clicks)
+		if (user.twitterVerified || user.twitterVerifiedType) {
 			monthlyVisits *= 1.15;
 		}
 
@@ -64,7 +65,7 @@ export function UserCard({ user }: UserCardProps) {
 	return (
 		<Card className="overflow-hidden hover:shadow-lg transition-shadow">
 			{/* Banner */}
-			<div className="h-32 relative bg-gradient-to-r from-blue-500 to-purple-500">
+			<div className="h-32 relative bg-linear-to-r from-blue-500 to-purple-500">
 				{user.twitterBannerUrl && (
 					<Image
 						src={user.twitterBannerUrl}
