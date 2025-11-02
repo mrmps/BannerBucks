@@ -12,7 +12,10 @@
   },
   "type": "module",
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "lint": "ultracite check",
+    "lint:fix": "ultracite fix",
+    "check-types": "tsc --noEmit"
   },
   "devDependencies": {
     "tsdown": "catalog:"
@@ -21,9 +24,10 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@banner-money/db": "workspace:*",
+    "@banner-money/logger": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@banner-money/db": "workspace:*"
+    "zod": "catalog:"
   }
 }

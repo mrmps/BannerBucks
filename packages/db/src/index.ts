@@ -7,5 +7,12 @@ neonConfig.webSocketConstructor = ws;
 // To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
 // neonConfig.poolQueryViaFetch = true
 
-const sql = neon(process.env.DATABASE_URL || "");
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error(
+    "DATABASE_URL environment variable is not set. Please check your .env file."
+  );
+}
+
+const sql = neon(databaseUrl);
 export const db = drizzle(sql);

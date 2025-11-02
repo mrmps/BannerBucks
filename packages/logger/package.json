@@ -1,13 +1,9 @@
 {
-  "name": "@banner-money/api",
+  "name": "@banner-money/logger",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
-    },
-    "./*": {
-      "types": "./dist/*.d.ts",
-      "default": "./src/*.ts"
     }
   },
   "type": "module",
@@ -24,14 +20,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@banner-money/auth": "workspace:*",
-    "@banner-money/db": "workspace:*",
-    "@orpc/client": "catalog:",
-    "@orpc/openapi": "catalog:",
-    "@orpc/server": "catalog:",
-    "@orpc/zod": "catalog:",
-    "dotenv": "catalog:",
-    "next": "catalog:",
-    "zod": "catalog:"
+    "pino": "^10.1.0",
+    "pino-pretty": "^13.1.2"
   }
 }

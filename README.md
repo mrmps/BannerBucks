@@ -64,6 +64,9 @@ banner-money/
 
 - `bun dev`: Start all applications in development mode
 - `bun build`: Build all applications
+- `bun validate`: **Run lint + type checking across all packages**
+- `bun lint`: Check code style and patterns (Ultracite)
+- `bun lint:fix`: Auto-fix linting issues
 - `bun check-types`: Check TypeScript types across all apps
 - `bun db:push`: Push schema changes to database
 - `bun db:studio`: Open database studio UI

@@ -1,5 +1,47 @@
+# Project Rules for banner-money
+
+## 🚨 MANDATORY: Always Validate After Code Changes
+
 use Orpc and useQuery. they are there for a reason! Never use useffect.
 
 Always be super typesefe. Never let any lint errors be.
 
 Never use 'any'. Always check for linter errors before completing a task and fix them all.
+
+
+After making ANY code changes, you MUST run:
+
+```bash
+bun run validate
+```
+
+This runs BOTH in parallel:
+- `turbo lint` - Code style/patterns (Ultracite/Biome)  
+- `turbo check-types` - TypeScript type safety
+
+## Why Both Tools Are Required
+
+| Tool | Catches | Example |
+|------|---------|---------|
+| **Linter** | Style, patterns, best practices | `console.log()`, unused vars, formatting |
+| **TypeScript** | Type errors, missing modules | Duplicate packages, type mismatches |
+
+**IMPORTANT:** Linters DO NOT catch type errors. You need both!
+
+## Workflow
+
+1. Make code changes
+2. Run `bun run validate`
+3. Fix any reported errors
+4. Repeat until all packages pass
+
+## Quick Commands
+
+```bash
+bun run validate    # Lint + type check all packages
+bun run lint:fix    # Auto-fix linting issues
+bun run lint        # Just lint
+bun run check-types # Just type check
+```
+
+You should basically never ignore type and lint errors. If you feel the urge, then research best practices on the web.
