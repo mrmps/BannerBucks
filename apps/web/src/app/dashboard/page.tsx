@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Loader from "@/components/loader";
 import { SyncTwitterButton } from "@/components/sync-twitter-button";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isPending && !session) {
+    if (!(isPending || session)) {
       router.push("/login");
     }
   }, [isPending, session, router]);
