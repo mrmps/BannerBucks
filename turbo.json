@@ -5,7 +5,22 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**"]
+			"outputs": ["dist/**"],
+			"env": [
+				"DATABASE_URL",
+				"DATABASE_URL_POOLER",
+				"PUBLIC_NEON_LAUNCHPAD_CLAIM_URL",
+				"BETTER_AUTH_SECRET",
+				"BETTER_AUTH_URL",
+				"CORS_ORIGIN",
+				"X_API_KEY",
+				"X_API_SECRET",
+				"X_BEARER_TOKEN",
+				"X_CLIENT_ID",
+				"X_CLIENT_SECRET",
+				"X_REDIRECT_URI",
+				"NODE_ENV"
+			]
 		},
 		"lint": {
 			"dependsOn": ["^lint"]
