@@ -1,7 +1,7 @@
-import { db } from "@banner-money/db";
-import { account, user } from "@banner-money/db/schema/auth";
-import { eq } from "drizzle-orm";
 import { Buffer } from "node:buffer";
+
+import { db, eq } from "@banner-money/db";
+import { account, users } from "@banner-money/db/schema/auth";
 
 export class TwitterSyncError extends Error {
   status?: number;
@@ -107,10 +107,11 @@ export async function syncTwitterProfile({
     : null;
 
   await db
-    .update(user)
+    .update(users)
     .set({
       name: userData.name,
       image: highQualityImage ?? null,
+      avatarUrl: highQualityImage ?? null,
       twitterId: userData.id,
       twitterUsername: userData.username,
       twitterBio: userData.description ?? null,
@@ -127,9 +128,11 @@ export async function syncTwitterProfile({
       twitterTweetCount: userData.public_metrics?.tweet_count ?? 0,
       twitterListedCount: userData.public_metrics?.listed_count ?? 0,
       twitterVerifiedFollowers: userData.verified_followers_count ?? 0,
+      twitterFollowersCount: userData.public_metrics?.followers_count ?? 0,
+      twitterSyncedAt: new Date(),
       updatedAt: new Date(),
     })
-    .where(eq(user.id, userId));
+    .where(eq(users.id, userId));
 
   return userData;
 }

@@ -153,9 +153,7 @@ export default function BrowsePage() {
       <div className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-8">
           <h1 className="font-bold text-3xl">Browse Marketplace</h1>
-          <p className="text-muted-foreground">
-            Find creators and sponsors
-          </p>
+          <p className="text-muted-foreground">Find creators and sponsors</p>
         </div>
       </div>
 
@@ -468,4 +466,3 @@ export default function BrowsePage() {
     </div>
   );
 }
-

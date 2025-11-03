@@ -5,10 +5,9 @@ import {
   TwitterSyncError,
   updateTwitterAccountTokens,
 } from "@banner-money/auth/twitter-sync";
-import { db } from "@banner-money/db";
-import { account, user } from "@banner-money/db/schema/auth";
+import { db, eq, isNotNull } from "@banner-money/db";
+import { account, users } from "@banner-money/db/schema/auth";
 import type { RouterClient } from "@orpc/server";
-import { eq, isNotNull } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure } from "../index";
 
@@ -20,48 +19,48 @@ export const appRouter = {
   })),
   users: {
     getAll: publicProcedure.handler(async () => {
-      const users = await db
+      const userRows = await db
         .select({
-          id: user.id,
-          name: user.name,
-          image: user.image,
-          role: user.role,
-          twitterId: user.twitterId,
-          twitterUsername: user.twitterUsername,
-          twitterBio: user.twitterBio,
-          twitterLocation: user.twitterLocation,
-          twitterUrl: user.twitterUrl,
-          twitterBannerUrl: user.twitterBannerUrl,
-          twitterVerified: user.twitterVerified,
-          twitterVerifiedType: user.twitterVerifiedType,
-          twitterCreatedAt: user.twitterCreatedAt,
-          twitterFollowers: user.twitterFollowers,
-          twitterFollowing: user.twitterFollowing,
-          twitterTweetCount: user.twitterTweetCount,
-          twitterListedCount: user.twitterListedCount,
-          twitterVerifiedFollowers: user.twitterVerifiedFollowers,
-          creatorStatus: user.creatorStatus,
-          creatorPriceMin: user.creatorPriceMin,
-          creatorPriceMax: user.creatorPriceMax,
-          creatorCategories: user.creatorCategories,
-          creatorLookingFor: user.creatorLookingFor,
-          creatorContactMethod: user.creatorContactMethod,
-          creatorContactValue: user.creatorContactValue,
-          sponsorStatus: user.sponsorStatus,
-          sponsorCompanyName: user.sponsorCompanyName,
-          sponsorCompanyWebsite: user.sponsorCompanyWebsite,
-          sponsorIndustry: user.sponsorIndustry,
-          sponsorCategories: user.sponsorCategories,
-          sponsorBudgetMin: user.sponsorBudgetMin,
-          sponsorBudgetMax: user.sponsorBudgetMax,
-          sponsorLookingFor: user.sponsorLookingFor,
-          createdAt: user.createdAt,
+          id: users.id,
+          name: users.name,
+          image: users.image,
+          role: users.role,
+          twitterId: users.twitterId,
+          twitterUsername: users.twitterUsername,
+          twitterBio: users.twitterBio,
+          twitterLocation: users.twitterLocation,
+          twitterUrl: users.twitterUrl,
+          twitterBannerUrl: users.twitterBannerUrl,
+          twitterVerified: users.twitterVerified,
+          twitterVerifiedType: users.twitterVerifiedType,
+          twitterCreatedAt: users.twitterCreatedAt,
+          twitterFollowers: users.twitterFollowers,
+          twitterFollowing: users.twitterFollowing,
+          twitterTweetCount: users.twitterTweetCount,
+          twitterListedCount: users.twitterListedCount,
+          twitterVerifiedFollowers: users.twitterVerifiedFollowers,
+          creatorStatus: users.creatorStatus,
+          creatorPriceMin: users.creatorPriceMin,
+          creatorPriceMax: users.creatorPriceMax,
+          creatorCategories: users.creatorCategories,
+          creatorLookingFor: users.creatorLookingFor,
+          creatorContactMethod: users.creatorContactMethod,
+          creatorContactValue: users.creatorContactValue,
+          sponsorStatus: users.sponsorStatus,
+          sponsorCompanyName: users.sponsorCompanyName,
+          sponsorCompanyWebsite: users.sponsorCompanyWebsite,
+          sponsorIndustry: users.sponsorIndustry,
+          sponsorCategories: users.sponsorCategories,
+          sponsorBudgetMin: users.sponsorBudgetMin,
+          sponsorBudgetMax: users.sponsorBudgetMax,
+          sponsorLookingFor: users.sponsorLookingFor,
+          createdAt: users.createdAt,
         })
-        .from(user)
-        .where(isNotNull(user.twitterId))
-        .orderBy(user.twitterFollowers);
+        .from(users)
+        .where(isNotNull(users.twitterId))
+        .orderBy(users.twitterFollowers);
 
-      return users;
+      return userRows;
     }),
     setRole: protectedProcedure
       .input(
@@ -73,12 +72,12 @@ export const appRouter = {
         const userId = context.session.user.id;
 
         await db
-          .update(user)
+          .update(users)
           .set({
             role: input.role,
             onboardingCompleted: true,
           })
-          .where(eq(user.id, userId));
+          .where(eq(users.id, userId));
 
         return { success: true, role: input.role };
       }),
@@ -98,7 +97,7 @@ export const appRouter = {
         const userId = context.session.user.id;
 
         await db
-          .update(user)
+          .update(users)
           .set({
             creatorStatus: input.status,
             creatorPriceMin: input.priceMin,
@@ -111,7 +110,7 @@ export const appRouter = {
             creatorContactValue: input.contactValue,
             updatedAt: new Date(),
           })
-          .where(eq(user.id, userId));
+          .where(eq(users.id, userId));
 
         return { success: true };
       }),
@@ -132,7 +131,7 @@ export const appRouter = {
         const userId = context.session.user.id;
 
         await db
-          .update(user)
+          .update(users)
           .set({
             sponsorStatus: input.status,
             sponsorCompanyName: input.companyName,
@@ -146,7 +145,7 @@ export const appRouter = {
             sponsorLookingFor: input.lookingFor,
             updatedAt: new Date(),
           })
-          .where(eq(user.id, userId));
+          .where(eq(users.id, userId));
 
         return { success: true };
       }),

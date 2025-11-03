@@ -1,4 +1,5 @@
 import { neon, neonConfig } from "@neondatabase/serverless";
+import { eq as drizzleEq, isNotNull as drizzleIsNotNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
 import ws from "ws";
 
@@ -16,3 +17,5 @@ if (!databaseUrl) {
 
 const sql = neon(databaseUrl);
 export const db = drizzle(sql);
+export const eq = drizzleEq;
+export const isNotNull = drizzleIsNotNull;
