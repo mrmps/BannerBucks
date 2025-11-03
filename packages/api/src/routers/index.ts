@@ -1,3 +1,10 @@
+import {
+  refreshTwitterAccessToken,
+  syncTwitterProfile,
+  TWITTER_UNAUTHORIZED_STATUS,
+  TwitterSyncError,
+  updateTwitterAccountTokens,
+} from "@banner-money/auth/twitter-sync";
 import { db } from "@banner-money/db";
 import { account, user } from "@banner-money/db/schema/auth";
 import type { RouterClient } from "@orpc/server";
@@ -162,85 +169,62 @@ export const appRouter = {
         throw new Error("Twitter account not connected");
       }
 
-      // Fetch Twitter user data using the access token - GET ALL AVAILABLE FIELDS!
-      const twitterResponse = await fetch(
-        "https://api.twitter.com/2/users/me?user.fields=id,name,username,description,location,url,profile_image_url,profile_banner_url,created_at,public_metrics,verified,verified_type,verified_followers_count,subscription_type,entities",
-        {
-          headers: {
-            Authorization: `Bearer ${twitterAccount.accessToken}`,
-          },
+      try {
+        const userData = await syncTwitterProfile({
+          userId,
+          accessToken: twitterAccount.accessToken,
+        });
+
+        return { success: true, user: userData };
+      } catch (error) {
+        if (error instanceof TwitterSyncError) {
+          if (
+            error.status === TWITTER_UNAUTHORIZED_STATUS &&
+            twitterAccount.refreshToken
+          ) {
+            const clientId = process.env.X_CLIENT_ID;
+            const clientSecret = process.env.X_CLIENT_SECRET;
+
+            if (!clientId) {
+              throw new Error(
+                "Twitter authorization expired and automatic refresh is unavailable. Please reconnect your account."
+              );
+            }
+
+            try {
+              const refreshed = await refreshTwitterAccessToken({
+                refreshToken: twitterAccount.refreshToken,
+                clientId,
+                clientSecret,
+              });
+
+              await updateTwitterAccountTokens({
+                accountId: twitterAccount.id,
+                accessToken: refreshed.access_token,
+                refreshToken: refreshed.refresh_token,
+                expiresIn: refreshed.expires_in,
+              });
+
+              const userData = await syncTwitterProfile({
+                userId,
+                accessToken: refreshed.access_token,
+              });
+
+              return { success: true, user: userData };
+            } catch (_refreshError) {
+              throw new Error(
+                "Twitter authorization expired and could not be refreshed automatically. Please reconnect your account."
+              );
+            }
+          }
+
+          throw new Error(
+            `Twitter sync failed (status ${error.status ?? "unknown"}).`
+          );
         }
-      );
 
-      if (!twitterResponse.ok) {
-        throw new Error("Failed to fetch Twitter data");
+        throw error;
       }
-
-      const twitterData = (await twitterResponse.json()) as {
-        data: {
-          id: string;
-          name: string;
-          username: string;
-          description?: string;
-          location?: string;
-          url?: string;
-          profile_image_url: string;
-          profile_banner_url?: string;
-          created_at?: string;
-          verified?: boolean;
-          verified_type?: string;
-          verified_followers_count?: number;
-          subscription_type?: string;
-          public_metrics?: {
-            followers_count: number;
-            following_count: number;
-            tweet_count: number;
-            listed_count: number;
-          };
-          // biome-ignore lint/suspicious/noExplicitAny: Twitter API entities have dynamic structure
-          entities?: any;
-        };
-      };
-      const userData = twitterData.data;
-
-      // Get higher quality profile image (remove _normal suffix for 400x400)
-      const highQualityImage = userData.profile_image_url.replace(
-        "_normal",
-        "_400x400"
-      );
-
-      // Get high-quality banner URL (API v2 provides base URL, append size)
-      const bannerUrl = userData.profile_banner_url
-        ? `${userData.profile_banner_url}/1500x500`
-        : null;
-
-      // Update user in database with Twitter data
-      await db
-        .update(user)
-        .set({
-          name: userData.name,
-          image: highQualityImage,
-          twitterId: userData.id,
-          twitterUsername: userData.username,
-          twitterBio: userData.description || null,
-          twitterLocation: userData.location || null,
-          twitterUrl: userData.url || null,
-          twitterBannerUrl: bannerUrl,
-          twitterVerified: userData.verified,
-          twitterVerifiedType: userData.verified_type || null,
-          twitterCreatedAt: userData.created_at
-            ? new Date(userData.created_at)
-            : null,
-          twitterFollowers: userData.public_metrics?.followers_count || 0,
-          twitterFollowing: userData.public_metrics?.following_count || 0,
-          twitterTweetCount: userData.public_metrics?.tweet_count || 0,
-          twitterListedCount: userData.public_metrics?.listed_count || 0,
-          twitterVerifiedFollowers: userData.verified_followers_count || 0,
-          updatedAt: new Date(),
-        })
-        .where(eq(user.id, userId));
-
-      return { success: true, user: userData };
     }),
   },
 };
