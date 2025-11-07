@@ -111,26 +111,26 @@ export async function syncTwitterProfile({
     .set({
       name: userData.name,
       image: highQualityImage ?? null,
-      avatarUrl: highQualityImage ?? null,
-      twitterId: userData.id,
-      twitterUsername: userData.username,
-      twitterBio: userData.description ?? null,
-      twitterLocation: userData.location ?? null,
-      twitterUrl: userData.url ?? null,
-      twitterBannerUrl: bannerUrl,
-      twitterVerified: userData.verified ?? false,
-      twitterVerifiedType: userData.verified_type ?? null,
-      twitterCreatedAt: userData.created_at
+      avatar_url: highQualityImage ?? null,
+      twitter_id: userData.id,
+      twitter_username: userData.username,
+      twitter_bio: userData.description ?? null,
+      twitter_location: userData.location ?? null,
+      twitter_url: userData.url ?? null,
+      twitter_banner_url: bannerUrl,
+      twitter_verified: userData.verified ?? false,
+      twitter_verified_type: userData.verified_type ?? null,
+      twitter_created_at: userData.created_at
         ? new Date(userData.created_at)
         : null,
-      twitterFollowers: userData.public_metrics?.followers_count ?? 0,
-      twitterFollowing: userData.public_metrics?.following_count ?? 0,
-      twitterTweetCount: userData.public_metrics?.tweet_count ?? 0,
-      twitterListedCount: userData.public_metrics?.listed_count ?? 0,
-      twitterVerifiedFollowers: userData.verified_followers_count ?? 0,
-      twitterFollowersCount: userData.public_metrics?.followers_count ?? 0,
-      twitterSyncedAt: new Date(),
-      updatedAt: new Date(),
+      twitter_followers: userData.public_metrics?.followers_count ?? 0,
+      twitter_following: userData.public_metrics?.following_count ?? 0,
+      twitter_tweet_count: userData.public_metrics?.tweet_count ?? 0,
+      twitter_listed_count: userData.public_metrics?.listed_count ?? 0,
+      twitter_verified_followers: userData.verified_followers_count ?? 0,
+      twitter_followers_count: userData.public_metrics?.followers_count ?? 0,
+      twitter_synced_at: new Date(),
+      updated_at: new Date(),
     })
     .where(eq(users.id, userId));
 
@@ -225,12 +225,12 @@ export async function updateTwitterAccountTokens({
   await db
     .update(account)
     .set({
-      accessToken,
-      refreshToken: refreshToken ?? null,
-      accessTokenExpiresAt: expiresIn
+      access_token: accessToken,
+      refresh_token: refreshToken ?? null,
+      access_token_expires_at: expiresIn
         ? new Date(Date.now() + expiresIn * MILLISECONDS_PER_SECOND)
         : null,
-      updatedAt: new Date(),
+      updated_at: new Date(),
     })
     .where(eq(account.id, accountId));
 }

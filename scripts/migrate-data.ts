@@ -2,10 +2,8 @@ import "dotenv/config";
 
 import { db } from "@banner-money/db";
 import { users } from "@banner-money/db/schema/auth";
-import {
-  creatorProfiles,
-  sponsorProfiles,
-} from "@banner-money/db/schema/marketplace";
+import { creatorProfiles } from "@banner-money/db/schema/domain/creator";
+import { sponsorProfiles } from "@banner-money/db/schema/domain/sponsor";
 import { eq, sql } from "drizzle-orm";
 
 type LegacyUserRow = Record<string, unknown>;
@@ -44,9 +42,9 @@ async function migrateUser(userRow: LegacyUserRow) {
   await db
     .update(users)
     .set({
-      twitterFollowersCount: (userRow.twitter_followers as number | null) ?? 0,
-      hasCreatorProfile: isCreator,
-      hasSponsorProfile: isSponsor,
+      twitter_followers_count: (userRow.twitter_followers as number | null) ?? 0,
+      has_creator_profile: isCreator,
+      has_sponsor_profile: isSponsor,
     })
     .where(eq(users.id, id));
 

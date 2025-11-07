@@ -25,40 +25,40 @@ export const appRouter = {
           name: users.name,
           image: users.image,
           role: users.role,
-          twitterId: users.twitterId,
-          twitterUsername: users.twitterUsername,
-          twitterBio: users.twitterBio,
-          twitterLocation: users.twitterLocation,
-          twitterUrl: users.twitterUrl,
-          twitterBannerUrl: users.twitterBannerUrl,
-          twitterVerified: users.twitterVerified,
-          twitterVerifiedType: users.twitterVerifiedType,
-          twitterCreatedAt: users.twitterCreatedAt,
-          twitterFollowers: users.twitterFollowers,
-          twitterFollowing: users.twitterFollowing,
-          twitterTweetCount: users.twitterTweetCount,
-          twitterListedCount: users.twitterListedCount,
-          twitterVerifiedFollowers: users.twitterVerifiedFollowers,
-          creatorStatus: users.creatorStatus,
-          creatorPriceMin: users.creatorPriceMin,
-          creatorPriceMax: users.creatorPriceMax,
-          creatorCategories: users.creatorCategories,
-          creatorLookingFor: users.creatorLookingFor,
-          creatorContactMethod: users.creatorContactMethod,
-          creatorContactValue: users.creatorContactValue,
-          sponsorStatus: users.sponsorStatus,
-          sponsorCompanyName: users.sponsorCompanyName,
-          sponsorCompanyWebsite: users.sponsorCompanyWebsite,
-          sponsorIndustry: users.sponsorIndustry,
-          sponsorCategories: users.sponsorCategories,
-          sponsorBudgetMin: users.sponsorBudgetMin,
-          sponsorBudgetMax: users.sponsorBudgetMax,
-          sponsorLookingFor: users.sponsorLookingFor,
-          createdAt: users.createdAt,
+          twitterId: users.twitter_id,
+          twitterUsername: users.twitter_username,
+          twitterBio: users.twitter_bio,
+          twitterLocation: users.twitter_location,
+          twitterUrl: users.twitter_url,
+          twitterBannerUrl: users.twitter_banner_url,
+          twitterVerified: users.twitter_verified,
+          twitterVerifiedType: users.twitter_verified_type,
+          twitterCreatedAt: users.twitter_created_at,
+          twitterFollowers: users.twitter_followers,
+          twitterFollowing: users.twitter_following,
+          twitterTweetCount: users.twitter_tweet_count,
+          twitterListedCount: users.twitter_listed_count,
+          twitterVerifiedFollowers: users.twitter_verified_followers,
+          creatorStatus: users.creator_status,
+          creatorPriceMin: users.creator_price_min,
+          creatorPriceMax: users.creator_price_max,
+          creatorCategories: users.creator_categories,
+          creatorLookingFor: users.creator_looking_for,
+          creatorContactMethod: users.creator_contact_method,
+          creatorContactValue: users.creator_contact_value,
+          sponsorStatus: users.sponsor_status,
+          sponsorCompanyName: users.sponsor_company_name,
+          sponsorCompanyWebsite: users.sponsor_company_website,
+          sponsorIndustry: users.sponsor_industry,
+          sponsorCategories: users.sponsor_categories,
+          sponsorBudgetMin: users.sponsor_budget_min,
+          sponsorBudgetMax: users.sponsor_budget_max,
+          sponsorLookingFor: users.sponsor_looking_for,
+          createdAt: users.created_at,
         })
         .from(users)
-        .where(isNotNull(users.twitterId))
-        .orderBy(users.twitterFollowers);
+        .where(isNotNull(users.twitter_id))
+        .orderBy(users.twitter_followers);
 
       return userRows;
     }),
@@ -75,7 +75,7 @@ export const appRouter = {
           .update(users)
           .set({
             role: input.role,
-            onboardingCompleted: true,
+            onboarding_completed: true,
           })
           .where(eq(users.id, userId));
 
@@ -99,16 +99,16 @@ export const appRouter = {
         await db
           .update(users)
           .set({
-            creatorStatus: input.status,
-            creatorPriceMin: input.priceMin,
-            creatorPriceMax: input.priceMax,
-            creatorCategories: input.categories
+            creator_status: input.status,
+            creator_price_min: input.priceMin,
+            creator_price_max: input.priceMax,
+            creator_categories: input.categories
               ? JSON.stringify(input.categories)
               : undefined,
-            creatorLookingFor: input.lookingFor,
-            creatorContactMethod: input.contactMethod,
-            creatorContactValue: input.contactValue,
-            updatedAt: new Date(),
+            creator_looking_for: input.lookingFor,
+            creator_contact_method: input.contactMethod,
+            creator_contact_value: input.contactValue,
+            updated_at: new Date(),
           })
           .where(eq(users.id, userId));
 
@@ -133,17 +133,17 @@ export const appRouter = {
         await db
           .update(users)
           .set({
-            sponsorStatus: input.status,
-            sponsorCompanyName: input.companyName,
-            sponsorCompanyWebsite: input.companyWebsite,
-            sponsorIndustry: input.industry,
-            sponsorCategories: input.categories
+            sponsor_status: input.status,
+            sponsor_company_name: input.companyName,
+            sponsor_company_website: input.companyWebsite,
+            sponsor_industry: input.industry,
+            sponsor_categories: input.categories
               ? JSON.stringify(input.categories)
               : undefined,
-            sponsorBudgetMin: input.budgetMin,
-            sponsorBudgetMax: input.budgetMax,
-            sponsorLookingFor: input.lookingFor,
-            updatedAt: new Date(),
+            sponsor_budget_min: input.budgetMin,
+            sponsor_budget_max: input.budgetMax,
+            sponsor_looking_for: input.lookingFor,
+            updated_at: new Date(),
           })
           .where(eq(users.id, userId));
 
@@ -156,9 +156,14 @@ export const appRouter = {
 
       // Get user's Twitter account from the account table
       const accounts = await db
-        .select()
+        .select({
+          id: account.id,
+          providerId: account.provider_id,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
+        })
         .from(account)
-        .where(eq(account.userId, userId));
+        .where(eq(account.user_id, userId));
 
       const twitterAccount = accounts.find(
         (acc) => acc.providerId === "twitter"

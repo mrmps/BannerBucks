@@ -153,7 +153,7 @@ export const auth = betterAuth<BetterAuthOptions>({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
-      user: users,
+      users,
       session,
       account,
       verification,
